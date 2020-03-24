@@ -1,0 +1,26 @@
+name: shared_versions
+description: shared_versions is a CLI tool that allow share the versions for multiple packages in Flutter.
+version: 1.0.0+1
+homepage: https://github.com/littleGnAl/shared_versions
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+executables:
+  shared_versions: shared_versions
+
+dependencies:
+  yaml: ^2.2.0
+  ansicolor: ^1.0.2
+  args: ^1.5.2
+  meta: ^1.1.8
+
+dev_dependencies:
+  mockito: ^4.1.1
+  test: ^1.14.2
+  test_process: ^1.0.5
+  path: ^1.6.4
+  test_descriptor: ^1.2.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec

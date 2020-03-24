@@ -1,0 +1,12 @@
+container:
+  image: cirrusci/flutter:latest
+  cpu: 8
+  memory: 16G
+
+check_task:
+  flutter_doctor_script: flutter doctor -v
+  flutter_analyze_script:
+    - bash scripts/dartfmt_check.sh
+    - flutter packages get
+    - flutter analyze
+    - pub run test
