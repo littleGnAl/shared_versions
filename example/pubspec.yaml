@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  built_collection: 4.3.2
-  built_value: 7.0.9
+  built_collection: 4.3.1
+  built_value: 7.0.8
   flutter_svg: ^0.15.0
 
 dev_dependencies:
@@ -20,7 +20,9 @@ dev_dependencies:
     sdk: flutter
 
   shared_versions:
-    path: ../
+    git:
+      url: https://github.com/littleGnAl/shared_versions.git
+      ref: master
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

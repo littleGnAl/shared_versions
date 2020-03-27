@@ -1,7 +1,7 @@
-built_collection: 4.3.2
-built_value: 7.0.9
+built_collection: 4.3.1
+built_value: 7.0.8
 flutter_svg: ^0.15.0
-assets_scanner:
-  git:
-    url: https://github.com/littleGnAl/assets-scanner.git
+shared_versions: 
+  git: 
+    url: https://github.com/littleGnAl/shared_versions.git
     ref: master

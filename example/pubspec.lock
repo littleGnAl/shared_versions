@@ -42,14 +42,14 @@ packages:
       name: built_collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.3.2"
+    version: "4.3.1"
   built_value:
     dependency: "direct main"
     description:
       name: built_value
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.9"
+    version: "7.0.8"
   charcode:
     dependency: transitive
     description:
@@ -168,9 +168,11 @@ packages:
   shared_versions:
     dependency: "direct dev"
     description:
-      path: ".."
-      relative: true
-    source: path
+      path: "."
+      ref: master
+      resolved-ref: cea406eaaa4ff6ce215a6e4f65afbe4b39e4a43b
+      url: "https://github.com/littleGnAl/shared_versions.git"
+    source: git
     version: "1.0.0+1"
   sky_engine:
     dependency: transitive
