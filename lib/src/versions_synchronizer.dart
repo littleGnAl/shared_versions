@@ -70,8 +70,11 @@ class VersionsSynchronizer {
             continue;
           }
         } else {
+          final versionValue = versionsMap[key];
+          _stdout.writeln('versionValue type: ${versionValue.runtimeType}');
+          final tempVersionValue = versionValue is String ? '\"$versionValue\"' : versionValue;
           final newLine =
-              line.substring(0, line.indexOf(":")) + ": " + versionsMap[key];
+              line.substring(0, line.indexOf(":")) + ": " + tempVersionValue;
           final trimNewLine = newLine.trim();
           if (trimNewLine != trimLine) {
             newContent.writeln(newLine);
@@ -107,7 +110,8 @@ class VersionsSynchronizer {
         line = "$k:";
         output.write(map2Lines(k, startIndent, lineIndex + i + 1, value));
       } else {
-        line = "$k: $value";
+        final tempValue = value is! String ? '\"$value\"' : value;
+        line = "$k: $tempValue";
         output.writeln(line
             .padLeft((lineIndex + 1) * _indent + line.length + startIndent));
         continue;
