@@ -35,7 +35,7 @@ class VersionsSynchronizer {
   ///
   /// If the matched versions is different, it will print the changes to the console.
   void syncTo(File pubspecFile) {
-    YamlMap versionsMap = loadYaml(_versionsFile.readAsStringSync());
+    YamlMap? versionsMap = loadYaml(_versionsFile.readAsStringSync());
     final pubspecMap = loadYaml(pubspecFile.readAsStringSync());
     StringBuffer newContent = StringBuffer();
 
@@ -53,17 +53,17 @@ class VersionsSynchronizer {
       }
 
       final key = trimLine.split(":").first.trim();
-      if (versionsMap.containsKey(key)) {
+      if (versionsMap!.containsKey(key)) {
         if (trimLine.endsWith(":")) {
-          YamlMap versionsValue = versionsMap[key];
-          YamlMap pubspecValue = _findMapByKey(key, pubspecMap);
+          YamlMap? versionsValue = versionsMap[key];
+          YamlMap? pubspecValue = _findMapByKey(key, pubspecMap);
           if (versionsValue.toString() != pubspecValue.toString()) {
             final versionsValueLines =
-                map2Lines(key, line.indexOf(key), 0, versionsValue);
+                map2Lines(key, line.indexOf(key), 0, versionsValue!);
             newContent.write(versionsValueLines);
 
             _stdout.write(
-                _createStdoutMessage(key, pubspecValue, key, versionsValue));
+                _createStdoutMessage(key, pubspecValue!, key, versionsValue));
 
             final pubspecValueLineLength = _map2LinesCount(pubspecValue);
             lineIndex += pubspecValueLineLength + 1;
@@ -133,8 +133,8 @@ class VersionsSynchronizer {
     return sum;
   }
 
-  YamlMap _findMapByKey(String key, YamlMap map) {
-    YamlMap result;
+  YamlMap? _findMapByKey(String key, YamlMap map) {
+    YamlMap? result;
     final keys = map.keys;
     for (int i = 0; i < keys.length; i++) {
       final k = keys.elementAt(i);
@@ -179,7 +179,7 @@ class VersionsSynchronizer {
     StringBuffer output = StringBuffer();
     final arrow = " -> ";
     for (int i = 0; i < length; i++) {
-      String fromLine;
+      String? fromLine;
       if (i < fromLineLength) {
         fromLine = fromLinesArr[i];
         output.write(_textWithRemovedColor(fromLine));
@@ -189,7 +189,7 @@ class VersionsSynchronizer {
         final toLine = toLinesArr[i];
         if (i == 0) {
           output.write(arrow.padLeft(
-              fromLinesMaxLineLength + arrow.length - fromLine.length));
+              fromLinesMaxLineLength + arrow.length - (fromLine?.length ?? 0)));
           output.write(_textWithAddedColor(toLine));
         } else {
           output.write(_textWithAddedColor(toLine.padLeft(

@@ -1,3 +1,7 @@
+## 2.0.0
+
+Migrating to null-safety
+
 ## 1.0.0+2
 * Update `README.md`
 
