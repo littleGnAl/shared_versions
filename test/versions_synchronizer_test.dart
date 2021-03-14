@@ -11,29 +11,40 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// import 'dart:io';
+
 import 'dart:io';
 
+import 'package:ansicolor/ansicolor.dart' as ansicolor;
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_versions/src/versions_synchronizer.dart';
 import 'package:test/test.dart';
-import 'package:ansicolor/ansicolor.dart' as ansicolor;
 import 'package:yaml/yaml.dart';
+import 'package:file/file.dart';
+import 'package:file/memory.dart';
 
-class _MockFile extends Mock implements File {}
+import 'versions_synchronizer_test.mocks.dart';
 
-class _MockStdout extends Mock implements Stdout {}
-
+@GenerateMocks([],
+    customMocks: [MockSpec<Stdout>(returnNullOnMissingStub: true)])
 void main() {
-  ansicolor.color_disabled = true;
-  _MockStdout mockStdout;
-  _MockFile versionsFile;
-  _MockFile pubspecFile;
-  VersionsSynchronizer versionsSynchronizer;
+  ansicolor.ansiColorDisabled = true;
+  late Stdout mockStdout;
+  late File versionsFile;
+  late File pubspecFile;
+  late VersionsSynchronizer versionsSynchronizer;
 
   setUp(() {
-    mockStdout = _MockStdout();
-    versionsFile = _MockFile();
-    pubspecFile = _MockFile();
+    mockStdout = MockStdout();
+
+    final fileSystem = MemoryFileSystem();
+
+    versionsFile = fileSystem.file('shared_versions.yaml');
+    versionsFile.createSync(recursive: true);
+    pubspecFile = fileSystem.file('pubspec.yaml');
+    pubspecFile.createSync(recursive: true);
+
     versionsSynchronizer = VersionsSynchronizer(mockStdout, versionsFile);
   });
 
@@ -116,12 +127,14 @@ void main() {
           '  built_collection: 4.3.2';
       final expectedPubspecFileContent = 'dependencies:\n'
           '  built_collection: ^4.3.1\n';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+
+      versionsFile.writeAsStringSync(versionsFileContent);
+
+      pubspecFile.writeAsStringSync(pubspecFileContent);
+
       versionsSynchronizer.syncTo(pubspecFile);
-      verify(pubspecFile.writeAsStringSync(expectedPubspecFileContent));
+
+      expect(pubspecFile.readAsStringSync(), expectedPubspecFileContent);
     });
 
     test("change versions of pub packages with comment", () {
@@ -132,12 +145,12 @@ void main() {
       final expectedPubspecFileContent = 'dependencies:\n'
           '  # built_collection: 4.3.2\n'
           '  built_collection: ^4.3.1\n';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+
+      versionsFile.writeAsStringSync(versionsFileContent);
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
-      verify(pubspecFile.writeAsStringSync(expectedPubspecFileContent));
+
+      expect(pubspecFile.readAsStringSync(), expectedPubspecFileContent);
     });
 
     test("change versions of pub packages with comment", () {
@@ -148,12 +161,11 @@ void main() {
       final expectedPubspecFileContent = 'dependencies:\n'
           '  # built_collection: 4.3.2\n'
           '  built_collection: ^4.3.1\n';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
-      verify(pubspecFile.writeAsStringSync(expectedPubspecFileContent));
+
+      expect(pubspecFile.readAsStringSync(), expectedPubspecFileContent);
     });
 
     test("change git packages to path packages", () {
@@ -167,12 +179,11 @@ void main() {
       final expectedPubspecFileContent = 'dependencies:\n'
           '  assets_scanner:\n'
           '    path: ../\n';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
-      verify(pubspecFile.writeAsStringSync(expectedPubspecFileContent));
+
+      expect(pubspecFile.readAsStringSync(), expectedPubspecFileContent);
     });
 
     test("change path packages to git packages", () {
@@ -188,12 +199,11 @@ void main() {
           '    git:\n'
           '      url: https://github.com/littleGnAl/assets-scanner.git\n'
           '      ref: master\n';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
-      verify(pubspecFile.writeAsStringSync(expectedPubspecFileContent));
+
+      expect(pubspecFile.readAsStringSync(), expectedPubspecFileContent);
     });
   });
 
@@ -204,10 +214,9 @@ void main() {
           '  built_collection: 4.3.2';
       final expectedPubspecFileContent =
           'built_collection: 4.3.2 -> built_collection: ^4.3.1';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
       verify(mockStdout.writeln(expectedPubspecFileContent));
     });
@@ -216,10 +225,9 @@ void main() {
       final versionsFileContent = 'built_collection: 4.3.2';
       final pubspecFileContent = 'dependencies:\n'
           '  built_collection: 4.3.2';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
       verifyNever(mockStdout
           .writeln("built_collection: 4.3.2 -> built_collection: 4.3.2"));
@@ -239,10 +247,8 @@ void main() {
           '    url: https://github.com/littleGnAl/assets-scanner.git\n'
           '    ref: master\n';
 
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
       verify(mockStdout.write(expectedPubspecFileContent));
     });
@@ -260,11 +266,8 @@ void main() {
           '  git:                                                         git:\n'
           '    url: https://github.com/littleGnAl/assets-scanner.git        url: https://github.com/littleGnAl/assets-scanner.git\n'
           '    ref: master                                                  ref: master\n';
-
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
       verifyNever(mockStdout.write(expectedPubspecFileContent));
     });
@@ -281,10 +284,9 @@ void main() {
           '  path: ../          git:\n'
           '                       url: https://github.com/littleGnAl/assets-scanner.git\n'
           '                       ref: master\n';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
       verify(mockStdout.write(expectedPubspecFileContent));
     });
@@ -299,10 +301,9 @@ void main() {
           '    path: ../';
       final expectedPubspecFileContent = 'assets_scanner: -> assets_scanner:\n'
           '  path: ../          path: ../\n';
-      when(versionsFile.readAsStringSync()).thenReturn(versionsFileContent);
-      when(pubspecFile.readAsStringSync()).thenReturn(pubspecFileContent);
-      when(pubspecFile.readAsLinesSync())
-          .thenReturn(pubspecFileContent.split("\n"));
+      versionsFile.writeAsStringSync(versionsFileContent);
+
+      pubspecFile.writeAsStringSync(pubspecFileContent);
       versionsSynchronizer.syncTo(pubspecFile);
       verifyNever(mockStdout.write(expectedPubspecFileContent));
     });

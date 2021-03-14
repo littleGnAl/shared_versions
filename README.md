@@ -15,7 +15,7 @@ built_value: 7.0.8
 flutter_svg: ^0.15.0
 shared_versions: 
   git: https://github.com/littleGnAl/shared_versions.git
-  ref: master
+    ref: master
 ```
 
 In your `pubspec.yaml`, add the following:

@@ -31,8 +31,7 @@ void main(List<String> arguments) {
       help: "The path of the versions file, which should be a yaml file");
 
   final results = parser.parse(arguments);
-  if ((results?.rest?.isNotEmpty ?? false) ||
-      !results["path"].endsWith(".yaml")) {
+  if ((results.rest.isNotEmpty) || !results["path"].endsWith(".yaml")) {
     stderr.writeln(parser.usage);
     return;
   }
