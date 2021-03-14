@@ -8,6 +8,5 @@ check_task:
   flutter_analyze_script:
     - bash scripts/dartfmt_check.sh
     - flutter packages get
-    - dart run build_runner build
     - dart analyze
     - dart run test
